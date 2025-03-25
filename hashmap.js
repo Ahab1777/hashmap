@@ -145,12 +145,24 @@ class HashMap {
             }
 
             //link previous item to next item so that current item is removed
+            let theNodeBeforeThisOne = null;
             while(currentBucketHeadNode !== null){
                 //If the next node is the target, bypass it my setting the current nodes nextNode to the one after the target
-                if(currentBucketHeadNode._nextNode._key === key){
-                    currentBucketHeadNode._nextNode = currentBucketHeadNode._nextNode._nextNode
+                if(currentBucketHeadNode._key === key){
+                    //exception handling: target node is the first node(there will be no nodes before it)
+                    if(theNodeBeforeThisOne === null){
+                        this._bucketArray[index] = currentBucketHeadNode._nextNode;
+                        this.removeTotalEntries()
+                        console.log('Item removed by exception', this._bucketArray)
+                        return
+                    }
+
+                    theNodeBeforeThisOne._nextNode = currentBucketHeadNode._nextNode
+                    this.removeTotalEntries()
+                    console.log('Item removed', this._bucketArray)
                     return true
                 }
+                theNodeBeforeThisOne = currentBucketHeadNode;
                 currentBucketHeadNode = currentBucketHeadNode._nextNode;
             }
 
@@ -184,15 +196,13 @@ class HashMap {
     }
 
     clear(){
-        for (let i = 0; i < this._bucketArray.length; i++) {
-            this._bucketArray[i] = null;
-        }
+        this._bucketArray = new Array(16).fill(null)
     }
 
     key(){
         const arrayOfKeys = [];
         for (let i = 0; i < this._bucketArray.length; i++) {
-            const currentBucketNode = this._bucketArray[i]
+            let currentBucketNode = this._bucketArray[i]
 
             while(currentBucketNode !== null){
                 arrayOfKeys.push(currentBucketNode._key);
@@ -206,19 +216,29 @@ class HashMap {
     values(){
         const arrayOfValues = [];
         for (let i = 0; i < this._bucketArray.length; i++) {
-            const currentBucketNode = this._bucketArray[i]
+            let currentBucketNode = this._bucketArray[i]
 
             while(currentBucketNode !== null){
-                arrayOfKeys.push(currentBucketNode._value);
+                arrayOfValues.push(currentBucketNode._value);
                 currentBucketNode = currentBucketNode._nextNode
             }
 
         }
-        return arrayOfKeys
+        return arrayOfValues
     }
-
+    
     entries(){
+        const arrayOfEntries = [];
+        for (let i = 0; i < this._bucketArray.length; i++) {
+            let currentBucketNode = this._bucketArray[i]
 
+            while(currentBucketNode !== null){
+                arrayOfEntries.push([currentBucketNode._key, currentBucketNode._value]);
+                currentBucketNode = currentBucketNode._nextNode
+            }
+
+        }
+        return arrayOfEntries
     }
 }
 
